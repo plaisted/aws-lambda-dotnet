@@ -193,6 +193,21 @@ namespace Amazon.Lambda.RuntimeSupport
         /// <summary>
         /// Get a HandlerWrapper that will call the given method on function invocation.
         /// Note that you may have to cast your handler to its specific type to help the compiler.
+        /// Example handler signature: Task&ltStreamedResponse&gt Handler(Stream)
+        /// </summary>
+        /// <param name="handler">Func called for each invocation of the Lambda function.</param>
+        /// <returns>A HandlerWrapper</returns>
+        public static HandlerWrapper GetHandlerWrapper(Func<Stream, Task<StreamedResponse>> handler)
+        {
+            return new HandlerWrapper(async (invocation) =>
+            {
+                return new InvocationResponse(new StreamedResponseWrapper(await handler(invocation.InputStream)));
+            });
+        }
+
+        /// <summary>
+        /// Get a HandlerWrapper that will call the given method on function invocation.
+        /// Note that you may have to cast your handler to its specific type to help the compiler.
         /// Example handler signature: Task&ltStream&gt Handler(PocoIn)
         /// </summary>
         /// <param name="handler">Func called for each invocation of the Lambda function.</param>
@@ -204,6 +219,23 @@ namespace Amazon.Lambda.RuntimeSupport
             {
                 TInput input = serializer.Deserialize<TInput>(invocation.InputStream);
                 return new InvocationResponse(await handler(input));
+            });
+        }
+
+        /// <summary>
+        /// Get a HandlerWrapper that will call the given method on function invocation.
+        /// Note that you may have to cast your handler to its specific type to help the compiler.
+        /// Example handler signature: Task&ltStreamedResponse&gt Handler(PocoIn)
+        /// </summary>
+        /// <param name="handler">Func called for each invocation of the Lambda function.</param>
+        /// <param name="serializer">ILambdaSerializer to use when calling the handler</param>
+        /// <returns>A HandlerWrapper</returns>
+        public static HandlerWrapper GetHandlerWrapper<TInput>(Func<TInput, Task<StreamedResponse>> handler, ILambdaSerializer serializer)
+        {
+            return new HandlerWrapper(async (invocation) =>
+            {
+                TInput input = serializer.Deserialize<TInput>(invocation.InputStream);
+                return new InvocationResponse(new StreamedResponseWrapper(await handler(input)));
             });
         }
 
@@ -240,6 +272,23 @@ namespace Amazon.Lambda.RuntimeSupport
         /// <summary>
         /// Get a HandlerWrapper that will call the given method on function invocation.
         /// Note that you may have to cast your handler to its specific type to help the compiler.
+        /// Example handler signature: Task&ltStreamedResponse&gt Handler(Stream, ILambdaContext)
+        /// </summary>
+        /// <param name="handler">Func called for each invocation of the Lambda function.</param>
+        /// <returns>A HandlerWrapper</returns>
+        public static HandlerWrapper GetHandlerWrapper(Func<Stream, ILambdaContext, Task<StreamedResponse>> handler)
+        {
+            return new HandlerWrapper(async (invocation) =>
+            {
+                return new InvocationResponse(
+                        new StreamedResponseWrapper(await handler(invocation.InputStream, invocation.LambdaContext))
+                    );
+            });
+        }
+
+        /// <summary>
+        /// Get a HandlerWrapper that will call the given method on function invocation.
+        /// Note that you may have to cast your handler to its specific type to help the compiler.
         /// Example handler signature: Task&ltStream&gt Handler(PocoIn, ILambdaContext)
         /// </summary>
         /// <param name="handler">Func called for each invocation of the Lambda function.</param>
@@ -251,6 +300,23 @@ namespace Amazon.Lambda.RuntimeSupport
             {
                 TInput input = serializer.Deserialize<TInput>(invocation.InputStream);
                 return new InvocationResponse(await handler(input, invocation.LambdaContext));
+            });
+        }
+
+        /// <summary>
+        /// Get a HandlerWrapper that will call the given method on function invocation.
+        /// Note that you may have to cast your handler to its specific type to help the compiler.
+        /// Example handler signature: Task&ltStreamedResponse&gt Handler(PocoIn, ILambdaContext)
+        /// </summary>
+        /// <param name="handler">Func called for each invocation of the Lambda function.</param>
+        /// <param name="serializer">ILambdaSerializer to use when calling the handler</param>
+        /// <returns>A HandlerWrapper</returns>
+        public static HandlerWrapper GetHandlerWrapper<TInput>(Func<TInput, ILambdaContext, Task<StreamedResponse>> handler, ILambdaSerializer serializer)
+        {
+            return new HandlerWrapper(async (invocation) =>
+            {
+                TInput input = serializer.Deserialize<TInput>(invocation.InputStream);
+                return new InvocationResponse(new StreamedResponseWrapper(await handler(input, invocation.LambdaContext)));
             });
         }
 

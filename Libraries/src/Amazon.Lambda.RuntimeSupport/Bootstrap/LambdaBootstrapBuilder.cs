@@ -129,6 +129,17 @@ namespace Amazon.Lambda.RuntimeSupport
             return new LambdaBootstrapBuilder(HandlerWrapper.GetHandlerWrapper(handler));
         }
 
+
+        /// <summary>
+        /// Create a builder for creating the LambdaBootstrap.
+        /// </summary>
+        /// <param name="handler">The handler that will be called for each Lambda invocation</param>
+        /// <returns></returns>
+        public static LambdaBootstrapBuilder Create(Func<Stream, Task<StreamedResponse>> handler)
+        {
+            return new LambdaBootstrapBuilder(HandlerWrapper.GetHandlerWrapper(handler));
+        }
+
         /// <summary>
         /// Create a builder for creating the LambdaBootstrap.
         /// </summary>
@@ -136,6 +147,17 @@ namespace Amazon.Lambda.RuntimeSupport
         /// <param name="serializer">The Lambda serializer that will be used to convert between Lambda's JSON documents and .NET objects.</param>
         /// <returns></returns>
         public static LambdaBootstrapBuilder Create<TInput>(Func<TInput, Task<Stream>> handler, ILambdaSerializer serializer)
+        {
+            return new LambdaBootstrapBuilder(HandlerWrapper.GetHandlerWrapper<TInput>(handler, serializer));
+        }
+
+        /// <summary>
+        /// Create a builder for creating the LambdaBootstrap.
+        /// </summary>
+        /// <param name="handler">The handler that will be called for each Lambda invocation</param>
+        /// <param name="serializer">The Lambda serializer that will be used to convert between Lambda's JSON documents and .NET objects.</param>
+        /// <returns></returns>
+        public static LambdaBootstrapBuilder Create<TInput>(Func<TInput, Task<StreamedResponse>> handler, ILambdaSerializer serializer)
         {
             return new LambdaBootstrapBuilder(HandlerWrapper.GetHandlerWrapper<TInput>(handler, serializer));
         }
@@ -164,9 +186,30 @@ namespace Amazon.Lambda.RuntimeSupport
         /// Create a builder for creating the LambdaBootstrap.
         /// </summary>
         /// <param name="handler">The handler that will be called for each Lambda invocation</param>
+        /// <returns></returns>
+        public static LambdaBootstrapBuilder Create(Func<Stream, ILambdaContext, Task<StreamedResponse>> handler)
+        {
+            return new LambdaBootstrapBuilder(HandlerWrapper.GetHandlerWrapper(handler));
+        }
+
+        /// <summary>
+        /// Create a builder for creating the LambdaBootstrap.
+        /// </summary>
+        /// <param name="handler">The handler that will be called for each Lambda invocation</param>
         /// <param name="serializer">The Lambda serializer that will be used to convert between Lambda's JSON documents and .NET objects.</param>
         /// <returns></returns>
         public static LambdaBootstrapBuilder Create<TInput>(Func<TInput, ILambdaContext, Task<Stream>> handler, ILambdaSerializer serializer)
+        {
+            return new LambdaBootstrapBuilder(HandlerWrapper.GetHandlerWrapper<TInput>(handler, serializer));
+        }
+
+        /// <summary>
+        /// Create a builder for creating the LambdaBootstrap.
+        /// </summary>
+        /// <param name="handler">The handler that will be called for each Lambda invocation</param>
+        /// <param name="serializer">The Lambda serializer that will be used to convert between Lambda's JSON documents and .NET objects.</param>
+        /// <returns></returns>
+        public static LambdaBootstrapBuilder Create<TInput>(Func<TInput, ILambdaContext, Task<StreamedResponse>> handler, ILambdaSerializer serializer)
         {
             return new LambdaBootstrapBuilder(HandlerWrapper.GetHandlerWrapper<TInput>(handler, serializer));
         }

@@ -76,6 +76,7 @@ namespace Amazon.Lambda.RuntimeSupport
 #if NET6_0_OR_GREATER
 
         [JsonSerializable(typeof(StatusResponse))]
+        [JsonSerializable(typeof(StreamedResponse))]
         [JsonSerializable(typeof(ErrorResponse))]
         public partial class RuntimeApiSerializationContext : JsonSerializerContext 
         { 
@@ -325,7 +326,10 @@ namespace Amazon.Lambda.RuntimeSupport
 
                     try
                     {
-                        content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                        content_.Headers.ContentType =
+                            outputStream is StreamedResponseWrapper ? 
+                                System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/vnd.awslambda.http-integration-response") :
+                                System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                         request_.Content = content_;
                         request_.Method = new System.Net.Http.HttpMethod("POST");
                         request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
